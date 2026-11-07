@@ -1,0 +1,32 @@
+# Dependencias
+node_modules/
+.pnpm-store/
+
+# Dependencias de agentes
+.agents/
+skills-lock.json
+
+# Compilacion TypeScript
+out/
+dist/
+*.tsbuildinfo
+
+# Empaquetado de extensiones VS Code
+*.vsix
+.vscode/
+.vscode-test/
+
+# Logs y depuracion
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Configuraciones del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Entorno y credenciales
+.env
+.env.local
+*.pem

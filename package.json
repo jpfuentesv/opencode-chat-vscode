@@ -1,0 +1,82 @@
+{
+  "name": "opencode-chat-vscode",
+  "displayName": "OpenCode Chat for VS Code",
+  "description": "Interfaz de chat para OpenCode CLI en VS Code con visualización del proceso de razonamiento",
+  "version": "1.0.2",
+  "publisher": "JuanPabloFuentesVivanco",
+  "homepage": "https://juanpablofuentes.cl/",
+  "author": {
+    "name": "Juan Pablo Fuentes Vivanco",
+    "url": "https://juanpablofuentes.cl/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jpfuentesv/opencode-chat-vscode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jpfuentesv/opencode-chat-vscode/issues"
+  },
+  "license": "MIT",
+  "icon": "resources/icon.png",
+  "main": "./out/extension.js",
+  "type": "commonjs",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "AI",
+    "Machine Learning",
+    "Chat",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "opencode",
+    "chat",
+    "ai",
+    "assistant",
+    "deepseek",
+    "claude",
+    "copilot"
+  ],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "opencode-sidebar",
+          "title": "OpenCode Chat",
+          "icon": "$(comment-discussion)"
+        }
+      ]
+    },
+    "views": {
+      "opencode-sidebar": [
+        {
+          "type": "webview",
+          "id": "opencode.chatView",
+          "name": "OpenCode Chat"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "opencode.resetChat",
+        "title": "OpenCode: Reiniciar Sesión",
+        "category": "OpenCode"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "tsc -p ./",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^4.1.0",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.4.0"
+  }
+}

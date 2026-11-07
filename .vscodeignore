@@ -1,0 +1,10 @@
+.agents/**
+.vscode/**
+src/**
+out/**/*.map
+pnpm-lock.yaml
+pnpm-workspace.yaml
+skills-lock.json
+tsconfig.json
+.gitignore
+*.vsix
