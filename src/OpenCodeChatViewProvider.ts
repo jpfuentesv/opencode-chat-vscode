@@ -332,15 +332,13 @@ export class OpenCodeChatViewProvider implements vscode.WebviewViewProvider {
   }
 
   /**
-   * Resuelve unicamente la carpeta del proyecto actual (sin leer memoria ni archivos).
-   * OpenCode se ejecuta con cwd = carpeta del proyecto, por lo que no es necesario
-   * inyectar el contenido de memoria/documentos como contexto de entrada (evita
-   * ensuciar la solicitud y desperdiciar tokens).
+   * Resuelve la carpeta del proyecto actual e inyecta la instrucción
+   * contextual mínima necesaria para que el modelo identifique su directorio de trabajo.
    */
   private async _readAgentDocumentation(): Promise<{ summary: string; prependText: string }> {
     const rootPath = this._getWorkspaceRoot();
-    const summary = `\u{1F4C2} Proyecto actual: ${rootPath}`;
-    const prependText = '';
+    const summary = `📁 Proyecto actual:\n${rootPath}`;
+    const prependText = `[Directorio de trabajo: ${rootPath}. Todas las consultas y operaciones corresponden a este proyecto.]`;
     return { summary, prependText };
   }
 

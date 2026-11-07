@@ -338,6 +338,10 @@ export function getWebviewHtml(): string {
 
     /* Context summary card */
     .context-summary {
+      flex-shrink: 0;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
       padding: 10px 12px;
       border: 1px solid var(--border);
       background: var(--vscode-editorWidget-background, var(--surface));
@@ -346,9 +350,12 @@ export function getWebviewHtml(): string {
       line-height: 1.5;
       color: var(--text);
       white-space: pre-wrap;
-      word-break: break-word;
+      word-break: break-all;
+      overflow-wrap: anywhere;
+      min-height: fit-content;
       max-height: 240px;
       overflow-y: auto;
+      overflow-x: hidden;
     }
     .context-summary h2 {
       font-size: 12px;

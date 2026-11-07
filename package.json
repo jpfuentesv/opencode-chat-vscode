@@ -2,7 +2,7 @@
   "name": "opencode-chat-vscode",
   "displayName": "OpenCode Chat for VS Code",
   "description": "Interfaz de chat para OpenCode CLI en VS Code con visualización del proceso de razonamiento",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "publisher": "JuanPabloFuentesVivanco",
   "homepage": "https://juanpablofuentes.cl/",
   "author": {
