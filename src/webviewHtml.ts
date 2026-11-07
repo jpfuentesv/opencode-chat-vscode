@@ -952,13 +952,17 @@ export function getWebviewHtml(): string {
       vscode.postMessage({ type: 'exportConversation', format: 'markdown' });
     });
 
-    closeSessionsBtn.addEventListener('click', () => {
-      sessionsDialog.close();
-    });
+    if (closeSessionsBtn && sessionsDialog) {
+      closeSessionsBtn.addEventListener('click', () => {
+        sessionsDialog.close();
+      });
+    }
 
-    refreshSessionsBtn.addEventListener('click', () => {
-      vscode.postMessage({ type: 'listSessions' });
-    });
+    if (refreshSessionsBtn) {
+      refreshSessionsBtn.addEventListener('click', () => {
+        vscode.postMessage({ type: 'listSessions' });
+      });
+    }
 
     cancelResetBtn.addEventListener('click', () => {
       resetDialog.close();
