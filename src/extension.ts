@@ -1,3 +1,10 @@
+/**
+ * OpenCode Chat for VS Code
+ * Autor: Juan Pablo Fuentes Vivanco
+ * Portafolio: https://juanpablofuentes.cl/
+ * Repositorio: https://github.com/jpfuentesv/opencode-chat-vscode
+ */
+
 import * as vscode from 'vscode';
 import { OpenCodeChatViewProvider } from './OpenCodeChatViewProvider';
 

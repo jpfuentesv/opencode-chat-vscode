@@ -1,6 +1,8 @@
 MIT License
 
 Copyright (c) 2026 Juan Pablo Fuentes Vivanco
+Portafolio y Sitio Web: https://juanpablofuentes.cl/
+Repositorio: https://github.com/jpfuentesv/opencode-chat-vscode
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
