@@ -232,6 +232,16 @@ export class OpenCodeChatViewProvider implements vscode.WebviewViewProvider {
           this._handleRollback(data.id);
           break;
         }
+        case 'insertToEditor': {
+          this._handleInsertToEditor(data.text);
+          break;
+        }
+        case 'copyToClipboard': {
+          if (data.text) {
+            vscode.env.clipboard.writeText(data.text);
+          }
+          break;
+        }
         case 'resetSession': {
           this._killActiveProcess();
           this._messageQueue = [];
@@ -471,6 +481,27 @@ export class OpenCodeChatViewProvider implements vscode.WebviewViewProvider {
         restoredText: targetEntry.text
       });
     }
+  }
+
+  private _handleInsertToEditor(text: string) {
+    if (!text) return;
+    const editor = vscode.window.activeTextEditor;
+    if (!editor) {
+      vscode.window.showInformationMessage('No hay ningún editor de texto activo para insertar.');
+      return;
+    }
+
+    editor.edit((editBuilder) => {
+      if (editor.selection.isEmpty) {
+        editBuilder.insert(editor.selection.active, text);
+      } else {
+        editBuilder.replace(editor.selection, text);
+      }
+    }).then((success) => {
+      if (success) {
+        vscode.window.showInformationMessage('Fragmento insertado en el editor activo.');
+      }
+    });
   }
 
   private _killActiveProcess() {

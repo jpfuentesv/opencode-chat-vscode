@@ -174,11 +174,10 @@ export function getWebviewHtml(): string {
 
     .msg-card {
       position: relative;
-      padding: 10px 28px 10px 12px;
+      padding: 10px 12px;
       border-radius: 8px;
       line-height: 1.5;
       font-size: 12.5px;
-      white-space: pre-wrap;
       word-break: break-word;
       overflow-wrap: break-word;
       border: 1px solid var(--border);
@@ -197,15 +196,165 @@ export function getWebviewHtml(): string {
     .msg-card.user:hover {
       border-color: var(--accent);
     }
-    .msg-card.user::after {
-      content: "↺ Clic para hacer rollback a este punto";
-      display: none;
-      font-size: 10.5px;
-      color: var(--accent);
-      margin-top: 5px;
+    .msg-card.user .msg-content {
+      white-space: pre-wrap;
     }
-    .msg-card.user:hover::after {
-      display: block;
+
+    /* Barra de acciones del mensaje estilo Antigravity */
+    .msg-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+      font-size: 11px;
+    }
+    .msg-role-badge {
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .msg-role-badge.user-role {
+      color: var(--accent);
+    }
+    .msg-toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .msg-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 11px;
+      cursor: pointer;
+      opacity: 0.75;
+      transition: all 0.15s ease;
+    }
+    .msg-action-btn:hover {
+      opacity: 1;
+      background: var(--vscode-toolbar-hoverBackground, rgba(128, 128, 128, 0.15));
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .msg-action-btn.success {
+      color: var(--success) !important;
+    }
+    .msg-action-btn svg {
+      width: 13px;
+      height: 13px;
+      stroke: currentColor;
+    }
+
+    /* Bloques de codigo enriquecidos estilo Antigravity */
+    .code-block-wrapper {
+      margin: 8px 0;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--vscode-editor-background, #1e1e1e);
+      overflow: hidden;
+    }
+    .code-block-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 8px;
+      background: var(--vscode-editorWidget-background, rgba(0, 0, 0, 0.2));
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .code-lang-label {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      text-transform: uppercase;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+    .code-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .code-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border: 1px solid transparent;
+      border-radius: 3px;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 10.5px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .code-action-btn:hover {
+      background: var(--vscode-toolbar-hoverBackground, rgba(128, 128, 128, 0.2));
+      border-color: var(--border);
+      color: var(--text);
+    }
+    .code-action-btn.success {
+      color: var(--success) !important;
+    }
+    .code-action-btn svg {
+      width: 12px;
+      height: 12px;
+    }
+    .code-block-body {
+      margin: 0;
+      padding: 10px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11.5px;
+      line-height: 1.45;
+      color: var(--text);
+      white-space: pre;
+    }
+
+    /* Tablas y elementos Markdown en respuestas */
+    .msg-content table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 8px 0;
+      font-size: 11.5px;
+    }
+    .msg-content th, .msg-content td {
+      border: 1px solid var(--border);
+      padding: 5px 8px;
+      text-align: left;
+    }
+    .msg-content th {
+      background: var(--vscode-editorWidget-background, rgba(128, 128, 128, 0.1));
+      font-weight: 600;
+    }
+    .msg-content ul, .msg-content ol {
+      margin: 6px 0 6px 18px;
+      padding: 0;
+    }
+    .msg-content li {
+      margin-bottom: 3px;
+    }
+    .msg-content p {
+      margin: 4px 0;
+    }
+    .msg-content code:not(.code-block-body) {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      padding: 1px 4px;
+      border-radius: 3px;
+      background: var(--vscode-editorWidget-background, rgba(128, 128, 128, 0.2));
+      font-size: 11.5px;
+      border: 1px solid rgba(128, 128, 128, 0.2);
     }
 
     .msg-delete-btn {
@@ -1006,10 +1155,179 @@ export function getWebviewHtml(): string {
       inputEl.focus();
     }
 
+    function copyTextToClipboard(text, btnElement, successLabel = 'Copiado') {
+      if (!text) return;
+      const originalHtml = btnElement ? btnElement.innerHTML : '';
+      
+      const setSuccess = () => {
+        if (!btnElement) return;
+        btnElement.classList.add('success');
+        btnElement.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> ' + successLabel;
+        setTimeout(() => {
+          btnElement.classList.remove('success');
+          btnElement.innerHTML = originalHtml;
+        }, 1500);
+      };
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(setSuccess).catch(() => {
+          vscode.postMessage({ type: 'copyToClipboard', text });
+          setSuccess();
+        });
+      } else {
+        vscode.postMessage({ type: 'copyToClipboard', text });
+        setSuccess();
+      }
+    }
+
+    function renderMarkdownToHtml(markdown) {
+      if (!markdown) return '';
+      const codeBlocks = [];
+
+      // 1. Extraer bloques de codigo triples comillas invertidas
+      const b3 = String.fromCharCode(96, 96, 96);
+      const b1 = String.fromCharCode(96);
+      const codeRegex = new RegExp(b3 + '([a-zA-Z0-9_\\-\\.\\+]*)\\n([\\s\\S]*?)' + b3, 'g');
+      let processed = markdown.replace(codeRegex, (match, lang, code) => {
+        const id = '___CODE_BLOCK_' + codeBlocks.length + '___';
+        const cleanLang = (lang || 'code').trim();
+        const cleanCode = code.replace(/\n$/, '');
+        codeBlocks.push({ id, lang: cleanLang, code: cleanCode });
+        return id;
+      });
+
+      // 2. Escapar HTML en el texto regular
+      const escapeHtml = (str) => str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      processed = escapeHtml(processed);
+
+      // Lineas horizontales
+      processed = processed.replace(/^---$/gm, '<hr style="border:none;border-top:1px solid var(--border);margin:8px 0;"/>');
+
+      // Encabezados
+      processed = processed.replace(/^### (.*$)/gim, '<h4 style="margin:6px 0 4px;font-size:12px;color:var(--text);font-weight:600;">$1</h4>');
+      processed = processed.replace(/^## (.*$)/gim, '<h3 style="margin:8px 0 4px;font-size:13px;color:var(--accent);font-weight:600;">$1</h3>');
+      processed = processed.replace(/^# (.*$)/gim, '<h2 style="margin:10px 0 6px;font-size:14px;color:var(--text);font-weight:700;">$1</h2>');
+
+      // Negritas y cursivas
+      processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      processed = processed.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+      // Codigo inline
+      const inlineCodeRegex = new RegExp(b1 + '([^' + b1 + '\\n]+)' + b1, 'g');
+      processed = processed.replace(inlineCodeRegex, '<code>$1</code>');
+
+      // Listas desordenadas
+      processed = processed.replace(/^\s*[-*]\s+(.*)$/gim, '<li>$1</li>');
+      processed = processed.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+
+      // Parrafos y saltos de linea
+      processed = processed.replace(/\n\n+/g, '</p><p>');
+      processed = processed.replace(/\n/g, '<br/>');
+      processed = '<p>' + processed + '</p>';
+
+      // 4. Reinsertar bloques de codigo con la UI estilo Antigravity
+      for (const block of codeBlocks) {
+        const escapedCode = escapeHtml(block.code);
+        const encodedCode = encodeURIComponent(block.code);
+        const blockHtml = 
+          '<div class="code-block-wrapper">' +
+            '<div class="code-block-header">' +
+              '<span class="code-lang-label">' + block.lang + '</span>' +
+              '<div class="code-actions">' +
+                '<button type="button" class="code-action-btn code-copy-btn" data-code="' + encodedCode + '">' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+                  '<span>Copiar</span>' +
+                '</button>' +
+                '<button type="button" class="code-action-btn code-insert-btn" data-code="' + encodedCode + '">' +
+                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>' +
+                  '<span>Insertar</span>' +
+                '</button>' +
+              '</div>' +
+            '</div>' +
+            '<pre class="code-block-body"><code>' + escapedCode + '</code></pre>' +
+          '</div>';
+        processed = processed.replace(block.id, blockHtml);
+      }
+
+      return processed;
+    }
+
     function createMessageElement(id, text, role) {
       const card = document.createElement('div');
       card.className = 'msg-card ' + role;
       card.dataset.id = id;
+
+      // Barra de encabezado y acciones del mensaje
+      const headerBar = document.createElement('div');
+      headerBar.className = 'msg-header-bar';
+
+      const badge = document.createElement('span');
+      badge.className = 'msg-role-badge ' + (role === 'user' ? 'user-role' : 'assistant-role');
+      badge.innerHTML = role === 'user' 
+        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Tú'
+        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><rect x="4" y="8" width="16" height="12" rx="2"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/></svg> OpenCode';
+      headerBar.appendChild(badge);
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'msg-toolbar-actions';
+
+      if (role === 'user') {
+        const copyPromptBtn = document.createElement('button');
+        copyPromptBtn.className = 'msg-action-btn';
+        copyPromptBtn.title = 'Copiar prompt';
+        copyPromptBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copiar</span>';
+        copyPromptBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          copyTextToClipboard(card.dataset.rawText || text, copyPromptBtn);
+        });
+        toolbar.appendChild(copyPromptBtn);
+
+        const reuseBtn = document.createElement('button');
+        reuseBtn.className = 'msg-action-btn';
+        reuseBtn.title = 'Reutilizar / Editar prompt';
+        reuseBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>Editar</span>';
+        reuseBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          inputEl.value = card.dataset.rawText || text;
+          adjustTextareaHeight();
+          inputEl.focus();
+        });
+        toolbar.appendChild(reuseBtn);
+      } else {
+        const copyMarkdownBtn = document.createElement('button');
+        copyMarkdownBtn.className = 'msg-action-btn';
+        copyMarkdownBtn.title = 'Copiar respuesta completa';
+        copyMarkdownBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copiar</span>';
+        copyMarkdownBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          copyTextToClipboard(card.dataset.rawText || '', copyMarkdownBtn);
+        });
+        toolbar.appendChild(copyMarkdownBtn);
+
+        const insertAllBtn = document.createElement('button');
+        insertAllBtn.className = 'msg-action-btn';
+        insertAllBtn.title = 'Insertar respuesta en editor activo';
+        insertAllBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg><span>Insertar</span>';
+        insertAllBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          vscode.postMessage({ type: 'insertToEditor', text: card.dataset.rawText || '' });
+        });
+        toolbar.appendChild(insertAllBtn);
+      }
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'msg-action-btn';
+      delBtn.title = 'Eliminar mensaje';
+      delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+      delBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        card.remove();
+        vscode.postMessage({ type: 'deleteHistoryMessage', id });
+      });
+      toolbar.appendChild(delBtn);
+
+      headerBar.appendChild(toolbar);
+      card.appendChild(headerBar);
 
       let thoughtBox = null;
       let thoughtBody = null;
@@ -1041,30 +1359,50 @@ export function getWebviewHtml(): string {
 
       const contentSpan = document.createElement('div');
       contentSpan.className = 'msg-content';
-      contentSpan.textContent = text;
-      card.appendChild(contentSpan);
-
-      const delBtn = document.createElement('button');
-      delBtn.className = 'msg-delete-btn';
-      delBtn.textContent = '✕';
-      delBtn.title = 'Eliminar mensaje';
-      delBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        card.remove();
-        vscode.postMessage({ type: 'deleteHistoryMessage', id });
-      });
-      card.appendChild(delBtn);
+      card.dataset.rawText = text || '';
 
       if (role === 'user') {
-        card.addEventListener('click', () => {
-          vscode.postMessage({ type: 'rollbackToMessage', id });
-        });
+        contentSpan.textContent = text;
+      } else {
+        contentSpan.innerHTML = renderMarkdownToHtml(text);
       }
+      card.appendChild(contentSpan);
+
+      // Event delegation para botones de bloques de codigo
+      card.addEventListener('click', (e) => {
+        const copyBtn = e.target.closest('.code-copy-btn');
+        if (copyBtn) {
+          e.stopPropagation();
+          const code = decodeURIComponent(copyBtn.dataset.code || '');
+          copyTextToClipboard(code, copyBtn, 'Copiado');
+          return;
+        }
+
+        const insertBtn = e.target.closest('.code-insert-btn');
+        if (insertBtn) {
+          e.stopPropagation();
+          const code = decodeURIComponent(insertBtn.dataset.code || '');
+          vscode.postMessage({ type: 'insertToEditor', text: code });
+          const original = insertBtn.innerHTML;
+          insertBtn.classList.add('success');
+          insertBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><polyline points="20 6 9 17 4 12"/></svg> Insertado';
+          setTimeout(() => {
+            insertBtn.classList.remove('success');
+            insertBtn.innerHTML = original;
+          }, 1500);
+          return;
+        }
+
+        if (role === 'user') {
+          vscode.postMessage({ type: 'rollbackToMessage', id });
+        }
+      });
 
       messagesEl.appendChild(card);
       messagesEl.scrollTop = messagesEl.scrollHeight;
 
       return {
+        card: card,
         content: contentSpan,
         thoughtContainer: thoughtBox,
         thoughtHeader: thoughtHeader,
@@ -1167,7 +1505,9 @@ export function getWebviewHtml(): string {
         case 'chunk': {
           const refs = assistantBubbles.get(data.assistantId);
           if (refs && refs.content) {
-            refs.content.textContent += data.text;
+            const currentRaw = (refs.card.dataset.rawText || '') + data.text;
+            refs.card.dataset.rawText = currentRaw;
+            refs.content.innerHTML = renderMarkdownToHtml(currentRaw);
             messagesEl.scrollTop = messagesEl.scrollHeight;
           }
           break;
