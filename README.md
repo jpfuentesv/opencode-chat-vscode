@@ -9,14 +9,23 @@ Desarrollado y mantenido por **[Juan Pablo Fuentes Vivanco](https://juanpablofue
 ## Características principales
 
 - **Integración nativa en la barra lateral**: Panel de chat accesible directamente desde la barra de actividades de VS Code.
-- **Detección automática del CLI**: Identificación del estado de OpenCode CLI en el sistema (online/offline) con detección de versión en tiempo real.
-- **Soporte de razonamiento (*Thinking Process*)**: Visualización del bloque de pensamiento y reflexión antes de la respuesta final.
+- **Diseño fluido estilo Antigravity**:
+  - Respuestas del asistente al descubierto en primer plano sin cajas rígidas.
+  - Bloques de código con barra de herramientas integrada (copiar código e insertar directamente en el editor activo al cursor).
+  - Acciones rápidas al pie de cada mensaje (copiar respuesta completa, reutilizar/editar prompt).
+- **Proceso de razonamiento optimizado (*Thinking Process*)**: Bloque de pensamiento en cápsula discreta desplegable que se colapsa automáticamente al finalizar la respuesta para no obstaculizar la lectura.
+- **Soporte de adjuntos y Drag & Drop**:
+  - Arrastra y suelta archivos o imágenes desde el Finder o el explorador de VS Code directamente al chat.
+  - Pega capturas de pantalla desde el portapapeles (`Cmd+V` / `Ctrl+V`).
+  - Botón de adjuntos nativo (📎) para seleccionar múltiples archivos.
+  - Inyección automática como parámetros `--file` al CLI de OpenCode.
 - **Selector dinámico de modelos y esfuerzo**:
   - Modelos sincronizados dinámicamente a través del comando `opencode models`.
-  - Selector de nivel de razonamiento (*default*, *low*, *medium*, *high*).
+  - Selector de nivel de razonamiento (*off*, *low*, *medium*, *high*).
 - **Ejecución contextual en el workspace**: Las sesiones y comandos se ejecutan tomando como directorio de trabajo (`cwd`) la carpeta abierta en VS Code.
 - **Acceso rápido y comandos**:
   - Reinicio de sesión mediante el comando `OpenCode: Reiniciar Sesión`.
+  - Exportación de conversaciones a Markdown.
   - Acceso directo desde el icono de estado en la barra inferior.
 
 ---

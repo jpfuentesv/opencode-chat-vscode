@@ -18,6 +18,7 @@ interface QueuedMessage {
   model: string;
   mode: string;
   reasoningEffort: string;
+  files?: string[];
 }
 
 interface HistoryEntry {
@@ -25,6 +26,7 @@ interface HistoryEntry {
   role: 'user' | 'assistant';
   text: string;
   thought?: string;
+  files?: string[];
 }
 
 export class OpenCodeChatViewProvider implements vscode.WebviewViewProvider {
@@ -198,6 +200,42 @@ export class OpenCodeChatViewProvider implements vscode.WebviewViewProvider {
           this._fetchAvailableModels();
           break;
         }
+        case 'selectFiles': {
+          const uris = await vscode.window.showOpenDialog({
+            canSelectMany: true,
+            openLabel: 'Adjuntar al chat',
+            title: 'Seleccionar archivos o imágenes'
+          });
+          if (uris && uris.length > 0) {
+            const files = uris.map((u) => u.fsPath);
+            this._view?.webview.postMessage({
+              type: 'filesSelected',
+              files
+            });
+          }
+          break;
+        }
+        case 'savePastedAttachment': {
+          try {
+            const workspaceRoot = this._getWorkspaceRoot();
+            const attachDir = path.join(workspaceRoot, '.opencode', 'attachments');
+            if (!fs.existsSync(attachDir)) {
+              fs.mkdirSync(attachDir, { recursive: true });
+            }
+            const ext = data.mimeType && data.mimeType.includes('png') ? 'png' : 'jpg';
+            const fileName = `paste_${Date.now()}_${Math.random().toString(36).slice(2, 6)}.${ext}`;
+            const targetPath = path.join(attachDir, fileName);
+            const buffer = Buffer.from(data.base64, 'base64');
+            fs.writeFileSync(targetPath, buffer);
+            this._view?.webview.postMessage({
+              type: 'fileAttached',
+              file: targetPath
+            });
+          } catch (e: any) {
+            vscode.window.showErrorMessage(`Error al guardar imagen adjunta: ${e.message}`);
+          }
+          break;
+        }
         case 'sendMessage': {
           this._handleIncomingMessage(
             {
@@ -205,7 +243,8 @@ export class OpenCodeChatViewProvider implements vscode.WebviewViewProvider {
               text: data.text,
               model: data.model || '',
               mode: data.mode || 'Normal',
-              reasoningEffort: data.reasoningEffort || 'medium'
+              reasoningEffort: data.reasoningEffort || 'medium',
+              files: Array.isArray(data.files) ? data.files : []
             },
             false
           );
@@ -342,14 +381,11 @@ export class OpenCodeChatViewProvider implements vscode.WebviewViewProvider {
   }
 
   /**
-   * Resuelve la carpeta del proyecto actual e inyecta la instrucción
-   * contextual mínima necesaria para que el modelo identifique su directorio de trabajo.
+   * Resuelve la carpeta del proyecto actual.
    */
   private async _readAgentDocumentation(): Promise<{ summary: string; prependText: string }> {
     const rootPath = this._getWorkspaceRoot();
-    const summary = `📁 Proyecto actual:\n${rootPath}`;
-    const prependText = `[Directorio de trabajo: ${rootPath}. Todas las consultas y operaciones corresponden a este proyecto.]`;
-    return { summary, prependText };
+    return { summary: '', prependText: '' };
   }
 
   private _handleIncomingMessage(msg: QueuedMessage, forceImmediate: boolean) {
@@ -408,16 +444,7 @@ export class OpenCodeChatViewProvider implements vscode.WebviewViewProvider {
         type: 'filesChanged',
         files
       });
-      // Also show VS Code notification
-      vscode.window.showInformationMessage(
-        `OpenCode modificó ${files.length} archivo(s): ${files.join(', ')}`,
-        'Abrir carpeta'
-      ).then((choice) => {
-        if (choice === 'Abrir carpeta') {
-          const folder = vscode.Uri.file(this._getWorkspaceRoot());
-          vscode.commands.executeCommand('revealFileInOS', folder);
-        }
-      });
+      // Notificacion eliminada para evitar alertas intrusivas
     }
   }
 
@@ -551,12 +578,12 @@ export class OpenCodeChatViewProvider implements vscode.WebviewViewProvider {
       this._contextInjected = true;
     }
 
-    this._history.push({ id: msg.id, role: 'user', text: effectiveText });
+    this._history.push({ id: msg.id, role: 'user', text: msg.text, files: msg.files });
 
     const assistantMsgId = 'ast_' + Date.now();
     this._view?.webview.postMessage({
       type: 'startUserAndAssistant',
-      userMsg: { ...msg, text: effectiveText },
+      userMsg: { ...msg, text: msg.text },
       assistantId: assistantMsgId
     });
 
@@ -575,6 +602,14 @@ export class OpenCodeChatViewProvider implements vscode.WebviewViewProvider {
 
     if (this._currentSessionId) {
       args.push('--session', this._currentSessionId);
+    }
+
+    if (msg.files && msg.files.length > 0) {
+      for (const f of msg.files) {
+        if (f && f.trim().length > 0) {
+          args.push('--file', f.trim());
+        }
+      }
     }
 
     if (msg.model && msg.model.trim() !== '' && msg.model !== 'default') {

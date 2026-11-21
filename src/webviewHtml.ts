@@ -165,66 +165,102 @@ export function getWebviewHtml(): string {
       min-height: 0;
       overflow-y: auto;
       overflow-x: hidden;
-      padding: 12px 10px;
+      padding: 16px 14px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 16px;
       scroll-behavior: smooth;
     }
 
     .msg-card {
       position: relative;
-      padding: 10px 12px;
-      border-radius: 8px;
-      line-height: 1.5;
-      font-size: 12.5px;
+      line-height: 1.6;
+      font-size: 13px;
       word-break: break-word;
       overflow-wrap: break-word;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      max-width: 100%;
     }
 
+    /* Mensaje del usuario estilo burbuja Antigravity */
     .msg-card.user {
-      background: var(--vscode-list-activeSelectionBackground, var(--surface));
-      color: var(--vscode-list-activeSelectionForeground, var(--text));
-      border-color: var(--vscode-list-activeSelectionBackground, var(--border));
-      cursor: pointer;
       align-self: flex-end;
-      width: 100%;
+      width: fit-content;
+      max-width: 88%;
+      padding: 10px 14px;
+      background: var(--vscode-editorWidget-background, rgba(255, 255, 255, 0.06));
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 18px 18px 4px 18px;
+      cursor: pointer;
+      margin-left: auto;
     }
     .msg-card.user:hover {
-      border-color: var(--accent);
+      border-color: var(--border-focus);
     }
     .msg-card.user .msg-content {
       white-space: pre-wrap;
     }
 
-    /* Barra de acciones del mensaje estilo Antigravity */
-    .msg-header-bar {
+    /* Mensaje del asistente al aire libre (primer plano, estilo Antigravity) */
+    .msg-card.assistant {
+      align-self: flex-start;
+      width: 100%;
+      max-width: 100%;
+      background: transparent !important;
+      color: var(--text);
+      border: none !important;
+      padding: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+    }
+
+    /* Barra de chips de adjuntos dentro del mensaje */
+    .msg-attachments-bar {
       display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+    .msg-attachment-chip {
+      display: inline-flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-      padding-bottom: 4px;
-      border-bottom: 1px solid rgba(128, 128, 128, 0.15);
+      gap: 6px;
+      padding: 4px 8px;
+      background: rgba(55, 148, 255, 0.12);
+      border: 1px solid rgba(55, 148, 255, 0.35);
+      border-radius: 6px;
       font-size: 11px;
+      color: var(--text);
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
-    .msg-role-badge {
-      font-weight: 600;
+    .msg-attachment-chip .file-badge {
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+
+    /* Barra inferior de acciones del mensaje (estilo Antigravity al pie del mensaje) */
+    .msg-footer-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      font-size: 11px;
       color: var(--text-muted);
-      letter-spacing: 0.3px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
     }
-    .msg-role-badge.user-role {
-      color: var(--accent);
+    .msg-card.user .msg-footer-bar {
+      justify-content: flex-end;
+      margin-top: 4px;
     }
-    .msg-toolbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 4px;
+    .msg-card.assistant .msg-footer-bar {
+      justify-content: flex-start;
+      padding-top: 2px;
     }
     .msg-action-btn {
       display: inline-flex;
@@ -237,7 +273,7 @@ export function getWebviewHtml(): string {
       color: var(--text-muted);
       font-size: 11px;
       cursor: pointer;
-      opacity: 0.75;
+      opacity: 0.65;
       transition: all 0.15s ease;
     }
     .msg-action-btn:hover {
@@ -253,6 +289,48 @@ export function getWebviewHtml(): string {
       width: 13px;
       height: 13px;
       stroke: currentColor;
+    }
+
+    /* Hilo de pensamiento (Chain of Thought) estilo Antigravity pill discreto */
+    .thought-container {
+      margin-bottom: 10px;
+      display: inline-block;
+      max-width: 100%;
+      font-size: 11.5px;
+    }
+    .thought-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 8px;
+      border-radius: 14px;
+      background: rgba(128, 128, 128, 0.1);
+      border: 1px solid rgba(128, 128, 128, 0.2);
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+      font-size: 11px;
+      transition: all 0.15s ease;
+    }
+    .thought-header:hover {
+      color: var(--text);
+      background: rgba(128, 128, 128, 0.2);
+      border-color: var(--border-focus);
+    }
+    .thought-body {
+      margin-top: 6px;
+      padding: 8px 10px;
+      color: var(--text-muted);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 11px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 220px;
+      overflow-y: auto;
+      border-radius: 6px;
+      border: 1px solid rgba(128, 128, 128, 0.2);
+      background: var(--vscode-editor-background, rgba(0, 0, 0, 0.2));
     }
 
     /* Bloques de codigo enriquecidos estilo Antigravity */
@@ -381,44 +459,7 @@ export function getWebviewHtml(): string {
       color: var(--danger);
     }
 
-    /* Hilo de pensamiento (Chain of Thought) */
-    .thought-container {
-      margin-bottom: 8px;
-      border: 1px solid var(--thought-border);
-      background: var(--thought-bg);
-      border-radius: 6px;
-      overflow: hidden;
-      font-size: 11.5px;
-    }
-    .thought-header {
-      padding: 6px 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: var(--text-muted);
-      cursor: pointer;
-      user-select: none;
-      background: var(--surface);
-      font-weight: 500;
-      gap: 6px;
-    }
-    .thought-header:hover {
-      color: var(--text);
-      background: var(--surface-hover);
-    }
-    .thought-body {
-      padding: 8px 10px;
-      color: var(--text-muted);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 11px;
-      line-height: 1.5;
-      white-space: pre-wrap;
-      word-break: break-word;
-      max-height: 200px;
-      overflow-y: auto;
-      border-top: 1px solid var(--thought-border);
-      background: var(--vscode-editor-background, var(--bg));
-    }
+
 
     .pulse-dot {
       display: inline-block;
@@ -553,6 +594,78 @@ export function getWebviewHtml(): string {
       flex-shrink: 0;
     }
 
+    /* Zona de adjuntos y Drag & Drop */
+    #drop-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(2px);
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 2px dashed var(--accent);
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 600;
+      pointer-events: none;
+      gap: 10px;
+    }
+    #drop-overlay.active {
+      display: flex;
+    }
+    #drop-overlay svg {
+      width: 42px;
+      height: 42px;
+      stroke: var(--accent);
+    }
+
+    #attachments-bar {
+      display: none;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 4px 2px 2px;
+      max-height: 90px;
+      overflow-y: auto;
+    }
+    #attachments-bar.has-items {
+      display: flex;
+    }
+    .input-attachment-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--vscode-editorWidget-background, rgba(128, 128, 128, 0.15));
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 11px;
+      color: var(--text);
+      max-width: 180px;
+    }
+    .input-attachment-chip span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .input-attachment-chip .remove-chip-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      padding: 0 1px;
+      font-size: 11px;
+    }
+    .input-attachment-chip .remove-chip-btn:hover {
+      color: var(--danger);
+    }
+
     /* Dock Inferior responsivo */
     .dock-outer {
       padding: 8px 10px 10px;
@@ -569,6 +682,10 @@ export function getWebviewHtml(): string {
       flex-direction: column;
       gap: 6px;
       transition: border-color 0.15s ease;
+    }
+    .dock-box.drag-over {
+      border-color: var(--accent);
+      background: rgba(55, 148, 255, 0.08);
     }
     .dock-box:focus-within {
       border-color: var(--border-focus);
@@ -837,6 +954,15 @@ export function getWebviewHtml(): string {
   </style>
 </head>
 <body>
+  <div id="drop-overlay">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="17 8 12 3 7 8"/>
+      <line x1="12" y1="3" x2="12" y2="15"/>
+    </svg>
+    <span>Suelta archivos o imágenes para adjuntar</span>
+  </div>
+
   <div class="header">
     <div class="status-wrap">
       <span id="status-dot" class="status-dot"></span>
@@ -883,10 +1009,14 @@ export function getWebviewHtml(): string {
   <div id="queue-container"></div>
 
   <div class="dock-outer">
-    <div class="dock-box">
-      <textarea id="prompt-input" rows="1" placeholder="¿Qué desarrollaremos hoy? (Enter para enviar, Shift+Enter salto de línea)"></textarea>
+    <div class="dock-box" id="dock-box">
+      <div id="attachments-bar"></div>
+      <textarea id="prompt-input" rows="1" placeholder="¿Qué desarrollaremos hoy? (Enter para enviar, Shift+Enter salto de línea, arrastra archivos)"></textarea>
       <div class="dock-toolbar">
         <div class="toolbar-left">
+          <button type="button" class="header-icon-btn" id="attach-btn" title="Adjuntar archivos o imágenes" aria-label="Adjuntar archivos" style="min-width:24px;min-height:24px;padding:2px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          </button>
           <select id="model-select" class="select-pill" title="Modelo">
             <optgroup label="Recientes">
               <option value="openrouter/openrouter/free">openrouter/openrouter/free</option>
@@ -1135,9 +1265,124 @@ export function getWebviewHtml(): string {
       }
     });
 
+    const dropOverlay = document.getElementById('drop-overlay');
+    const dockBox = document.getElementById('dock-box');
+    const attachmentsBar = document.getElementById('attachments-bar');
+    const attachBtn = document.getElementById('attach-btn');
+    let attachedFiles = [];
+
+    function updateAttachmentsUi() {
+      if (!attachmentsBar) return;
+      attachmentsBar.innerHTML = '';
+      if (attachedFiles.length === 0) {
+        attachmentsBar.classList.remove('has-items');
+        return;
+      }
+      attachmentsBar.classList.add('has-items');
+      attachedFiles.forEach((filePath, idx) => {
+        const chip = document.createElement('div');
+        chip.className = 'input-attachment-chip';
+        const parts = filePath.split('/');
+        const name = parts[parts.length - 1] || filePath;
+        chip.innerHTML = '<span>' + name + '</span><button type="button" class="remove-chip-btn" title="Eliminar adjunto">✕</button>';
+        chip.querySelector('.remove-chip-btn').addEventListener('click', () => {
+          attachedFiles.splice(idx, 1);
+          updateAttachmentsUi();
+        });
+        attachmentsBar.appendChild(chip);
+      });
+    }
+
+    if (attachBtn) {
+      attachBtn.addEventListener('click', () => {
+        vscode.postMessage({ type: 'selectFiles' });
+      });
+    }
+
+    // Manejo de Drag and Drop en la ventana
+    let dragCounter = 0;
+    window.addEventListener('dragenter', (e) => {
+      e.preventDefault();
+      dragCounter++;
+      if (dropOverlay) dropOverlay.classList.add('active');
+    });
+
+    window.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      dragCounter--;
+      if (dragCounter <= 0) {
+        dragCounter = 0;
+        if (dropOverlay) dropOverlay.classList.remove('active');
+      }
+    });
+
+    window.addEventListener('dragover', (e) => {
+      e.preventDefault();
+    });
+
+    window.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dragCounter = 0;
+      if (dropOverlay) dropOverlay.classList.remove('active');
+
+      if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        for (let i = 0; i < e.dataTransfer.files.length; i++) {
+          const file = e.dataTransfer.files[i];
+          if (file.path) {
+            if (!attachedFiles.includes(file.path)) {
+              attachedFiles.push(file.path);
+            }
+          } else {
+            // Lectura de archivo suelto (por ejemplo imagen arrastrada desde navegador)
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              const res = ev.target.result;
+              if (typeof res === 'string') {
+                const b64 = res.split(',')[1];
+                vscode.postMessage({
+                  type: 'savePastedAttachment',
+                  base64: b64,
+                  mimeType: file.type || 'image/png'
+                });
+              }
+            };
+            reader.readAsDataURL(file);
+          }
+        }
+        updateAttachmentsUi();
+      }
+    });
+
+    // Manejo de pegado desde el portapapeles (Cmd+V / Ctrl+V de capturas de pantalla)
+    window.addEventListener('paste', (e) => {
+      const items = e.clipboardData && e.clipboardData.items;
+      if (!items) return;
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        if (item.type && item.type.indexOf('image') !== -1) {
+          const file = item.getAsFile();
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              const res = ev.target.result;
+              if (typeof res === 'string') {
+                const b64 = res.split(',')[1];
+                vscode.postMessage({
+                  type: 'savePastedAttachment',
+                  base64: b64,
+                  mimeType: item.type
+                });
+              }
+            };
+            reader.readAsDataURL(file);
+          }
+        }
+      }
+    });
+
     function submitCurrentInput() {
       const text = inputEl.value.trim();
-      if (!text) return;
+      if (!text && attachedFiles.length === 0) return;
       setProcessing(true);
 
       const msgId = 'msg_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
@@ -1147,9 +1392,12 @@ export function getWebviewHtml(): string {
         text: text,
         model: modelSelect.value,
         mode: modeSelect.value,
-        reasoningEffort: reasoningSelect.value
+        reasoningEffort: reasoningSelect.value,
+        files: [...attachedFiles]
       });
 
+      attachedFiles = [];
+      updateAttachmentsUi();
       inputEl.value = '';
       adjustTextareaHeight();
       inputEl.focus();
@@ -1253,87 +1501,32 @@ export function getWebviewHtml(): string {
       return processed;
     }
 
-    function createMessageElement(id, text, role) {
+    function createMessageElement(id, text, role, files = []) {
       const card = document.createElement('div');
       card.className = 'msg-card ' + role;
       card.dataset.id = id;
 
-      // Barra de encabezado y acciones del mensaje
-      const headerBar = document.createElement('div');
-      headerBar.className = 'msg-header-bar';
-
-      const badge = document.createElement('span');
-      badge.className = 'msg-role-badge ' + (role === 'user' ? 'user-role' : 'assistant-role');
-      badge.innerHTML = role === 'user' 
-        ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> Tú'
-        : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px;"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><rect x="4" y="8" width="16" height="12" rx="2"/><circle cx="9" cy="13" r="1"/><circle cx="15" cy="13" r="1"/></svg> OpenCode';
-      headerBar.appendChild(badge);
-
-      const toolbar = document.createElement('div');
-      toolbar.className = 'msg-toolbar-actions';
-
-      if (role === 'user') {
-        const copyPromptBtn = document.createElement('button');
-        copyPromptBtn.className = 'msg-action-btn';
-        copyPromptBtn.title = 'Copiar prompt';
-        copyPromptBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copiar</span>';
-        copyPromptBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          copyTextToClipboard(card.dataset.rawText || text, copyPromptBtn);
+      // Si el mensaje tiene archivos adjuntos, mostrarlos como chips en la parte superior
+      if (files && files.length > 0) {
+        const attachBar = document.createElement('div');
+        attachBar.className = 'msg-attachments-bar';
+        files.forEach((f) => {
+          const chip = document.createElement('div');
+          chip.className = 'msg-attachment-chip';
+          const parts = f.split('/');
+          const filename = parts[parts.length - 1] || f;
+          const ext = filename.split('.').pop() || 'file';
+          chip.innerHTML = '<span class="file-badge">' + ext + '</span><span>' + filename + '</span>';
+          attachBar.appendChild(chip);
         });
-        toolbar.appendChild(copyPromptBtn);
-
-        const reuseBtn = document.createElement('button');
-        reuseBtn.className = 'msg-action-btn';
-        reuseBtn.title = 'Reutilizar / Editar prompt';
-        reuseBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>Editar</span>';
-        reuseBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          inputEl.value = card.dataset.rawText || text;
-          adjustTextareaHeight();
-          inputEl.focus();
-        });
-        toolbar.appendChild(reuseBtn);
-      } else {
-        const copyMarkdownBtn = document.createElement('button');
-        copyMarkdownBtn.className = 'msg-action-btn';
-        copyMarkdownBtn.title = 'Copiar respuesta completa';
-        copyMarkdownBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copiar</span>';
-        copyMarkdownBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          copyTextToClipboard(card.dataset.rawText || '', copyMarkdownBtn);
-        });
-        toolbar.appendChild(copyMarkdownBtn);
-
-        const insertAllBtn = document.createElement('button');
-        insertAllBtn.className = 'msg-action-btn';
-        insertAllBtn.title = 'Insertar respuesta en editor activo';
-        insertAllBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg><span>Insertar</span>';
-        insertAllBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          vscode.postMessage({ type: 'insertToEditor', text: card.dataset.rawText || '' });
-        });
-        toolbar.appendChild(insertAllBtn);
+        card.appendChild(attachBar);
       }
-
-      const delBtn = document.createElement('button');
-      delBtn.className = 'msg-action-btn';
-      delBtn.title = 'Eliminar mensaje';
-      delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
-      delBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        card.remove();
-        vscode.postMessage({ type: 'deleteHistoryMessage', id });
-      });
-      toolbar.appendChild(delBtn);
-
-      headerBar.appendChild(toolbar);
-      card.appendChild(headerBar);
 
       let thoughtBox = null;
       let thoughtBody = null;
       let thoughtHeader = null;
 
+      // En el asistente, el pensamiento va arriba como un pill colapsable sutil
       if (role === 'assistant') {
         thoughtBox = document.createElement('div');
         thoughtBox.className = 'thought-container';
@@ -1341,7 +1534,7 @@ export function getWebviewHtml(): string {
 
         thoughtHeader = document.createElement('div');
         thoughtHeader.className = 'thought-header';
-        thoughtHeader.innerHTML = '<span class="header-title"><span class="pulse-dot"></span>Pensando...</span><span class="header-icon">▾</span>';
+        thoughtHeader.innerHTML = '<span class="pulse-dot"></span><span class="header-title">Pensando...</span><span class="header-icon" style="font-size:9px;opacity:0.7;">▾</span>';
 
         thoughtBody = document.createElement('div');
         thoughtBody.className = 'thought-body';
@@ -1358,6 +1551,7 @@ export function getWebviewHtml(): string {
         card.appendChild(thoughtBox);
       }
 
+      // Contenido principal del mensaje al aire libre
       const contentSpan = document.createElement('div');
       contentSpan.className = 'msg-content';
       card.dataset.rawText = text || '';
@@ -1368,6 +1562,67 @@ export function getWebviewHtml(): string {
         contentSpan.innerHTML = renderMarkdownToHtml(text);
       }
       card.appendChild(contentSpan);
+
+      // Barra de herramientas al pie del mensaje (footer estilo Antigravity)
+      const footerBar = document.createElement('div');
+      footerBar.className = 'msg-footer-bar';
+
+      if (role === 'user') {
+        const copyPromptBtn = document.createElement('button');
+        copyPromptBtn.className = 'msg-action-btn';
+        copyPromptBtn.title = 'Copiar prompt';
+        copyPromptBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copiar</span>';
+        copyPromptBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          copyTextToClipboard(card.dataset.rawText || text, copyPromptBtn);
+        });
+        footerBar.appendChild(copyPromptBtn);
+
+        const reuseBtn = document.createElement('button');
+        reuseBtn.className = 'msg-action-btn';
+        reuseBtn.title = 'Reutilizar / Editar prompt';
+        reuseBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg><span>Editar</span>';
+        reuseBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          inputEl.value = card.dataset.rawText || text;
+          adjustTextareaHeight();
+          inputEl.focus();
+        });
+        footerBar.appendChild(reuseBtn);
+      } else {
+        const copyMarkdownBtn = document.createElement('button');
+        copyMarkdownBtn.className = 'msg-action-btn';
+        copyMarkdownBtn.title = 'Copiar respuesta';
+        copyMarkdownBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><span>Copiar</span>';
+        copyMarkdownBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          copyTextToClipboard(card.dataset.rawText || '', copyMarkdownBtn);
+        });
+        footerBar.appendChild(copyMarkdownBtn);
+
+        const insertAllBtn = document.createElement('button');
+        insertAllBtn.className = 'msg-action-btn';
+        insertAllBtn.title = 'Insertar en editor';
+        insertAllBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg><span>Insertar</span>';
+        insertAllBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          vscode.postMessage({ type: 'insertToEditor', text: card.dataset.rawText || '' });
+        });
+        footerBar.appendChild(insertAllBtn);
+      }
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'msg-action-btn';
+      delBtn.title = 'Eliminar mensaje';
+      delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>';
+      delBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        card.remove();
+        vscode.postMessage({ type: 'deleteHistoryMessage', id });
+      });
+      footerBar.appendChild(delBtn);
+
+      card.appendChild(footerBar);
 
       // Event delegation para botones de bloques de codigo
       card.addEventListener('click', (e) => {
@@ -1476,9 +1731,27 @@ export function getWebviewHtml(): string {
           adjustTextareaHeight();
           break;
         }
+        case 'filesSelected': {
+          if (Array.isArray(data.files)) {
+            data.files.forEach((f) => {
+              if (!attachedFiles.includes(f)) {
+                attachedFiles.push(f);
+              }
+            });
+            updateAttachmentsUi();
+          }
+          break;
+        }
+        case 'fileAttached': {
+          if (data.file && !attachedFiles.includes(data.file)) {
+            attachedFiles.push(data.file);
+            updateAttachmentsUi();
+          }
+          break;
+        }
         case 'startUserAndAssistant': {
           setProcessing(true);
-          createMessageElement(data.userMsg.id, data.userMsg.text, 'user');
+          createMessageElement(data.userMsg.id, data.userMsg.text, 'user', data.userMsg.files || []);
           const astRefs = createMessageElement(data.assistantId, '', 'assistant');
           assistantBubbles.set(data.assistantId, astRefs);
           if (progressBar) {
@@ -1519,14 +1792,16 @@ export function getWebviewHtml(): string {
           const refs = assistantBubbles.get(data.assistantId);
           if (refs && refs.thoughtContainer && refs.thoughtHeader) {
             if (!refs.hasThought) {
-              // Si el modelo respondió directo sin bloques de razonamiento intermedios, ocultar la caja vacía
+              // Si el modelo respondio directo sin bloques de razonamiento intermedios, ocultar la caja vacia
               refs.thoughtContainer.style.display = 'none';
             } else {
               const titleSpan = refs.thoughtHeader.querySelector('.header-title');
               if (titleSpan) {
-                titleSpan.innerHTML = 'Pensamiento completado';
+                titleSpan.textContent = 'Pensamiento completado';
               }
-              if (refs.thoughtBody && refs.content && refs.content.textContent.trim().length > 0) {
+              const pulse = refs.thoughtHeader.querySelector('.pulse-dot');
+              if (pulse) pulse.remove();
+              if (refs.thoughtBody) {
                 refs.thoughtBody.style.display = 'none';
                 refs.thoughtHeader.querySelector('.header-icon').textContent = '▸';
               }
