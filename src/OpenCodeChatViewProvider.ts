@@ -381,11 +381,15 @@ export class OpenCodeChatViewProvider implements vscode.WebviewViewProvider {
   }
 
   /**
-   * Resuelve la carpeta del proyecto actual.
+   * Resuelve la carpeta del proyecto actual e inyecta de forma transparente
+   * el contexto de ubicación para que OpenCode conozca su directorio de trabajo
+   * sin interferir visualmente en el chat del usuario.
    */
   private async _readAgentDocumentation(): Promise<{ summary: string; prependText: string }> {
     const rootPath = this._getWorkspaceRoot();
-    return { summary: '', prependText: '' };
+    const folderName = path.basename(rootPath) || rootPath;
+    const prependText = `[Contexto del Entorno VS Code: Directorio de trabajo: ${rootPath} (Proyecto: ${folderName}). Todas las operaciones, inspecciones y archivos corresponden a esta ruta.]`;
+    return { summary: '', prependText };
   }
 
   private _handleIncomingMessage(msg: QueuedMessage, forceImmediate: boolean) {

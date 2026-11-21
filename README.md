@@ -6,13 +6,15 @@ Desarrollado y mantenido por **[Juan Pablo Fuentes Vivanco](https://juanpablofue
 
 ---
 
-## Características principales (v1.1.1)
+## Características principales (v1.1.2)
 
 - **Diseño fluido al estilo Antigravity**:
   - Respuestas del asistente al descubierto en primer plano sin cajas rígidas.
   - Burbuja asimétrica elegante para las entradas del usuario (`border-radius: 18px 18px 4px 18px`).
   - Barra de herramientas contextual al pie de cada mensaje (copiar respuesta completa, reutilizar/editar prompt en el dock de entrada, eliminar).
   - Bloques de código enriquecidos con botones de copiar e insertar directamente en el editor activo en la posición del cursor.
+- **Contexto automático y transparente de ubicación de workspace**:
+  - OpenCode reconoce automáticamente el directorio del proyecto abierto en VS Code de forma transparente por debajo, sin alterar visualmente los mensajes del usuario ni ensuciar la interfaz.
 - **Motor de renderizado Markdown estructurado**:
   - Pre-procesamiento de espaciado que separa automáticamente encabezados, listas y viñetas concatenadas inline por los modelos.
   - Jerarquía tipográfica con escala clara (`<h2>`, `<h3>` con acento azul, `<ul>` con sangría visual de 20px).
