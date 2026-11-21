@@ -1187,11 +1187,12 @@ export function getWebviewHtml(): string {
       // 1. Extraer bloques de codigo triples comillas invertidas
       const b3 = String.fromCharCode(96, 96, 96);
       const b1 = String.fromCharCode(96);
-      const codeRegex = new RegExp(b3 + '([a-zA-Z0-9_\\-\\.\\+]*)\\n([\\s\\S]*?)' + b3, 'g');
+      const nl = String.fromCharCode(10);
+      const codeRegex = new RegExp(b3 + '([a-zA-Z0-9_\\-\\.\\+]*)' + nl + '([\\s\\S]*?)' + b3, 'g');
       let processed = markdown.replace(codeRegex, (match, lang, code) => {
         const id = '___CODE_BLOCK_' + codeBlocks.length + '___';
         const cleanLang = (lang || 'code').trim();
-        const cleanCode = code.replace(/\n$/, '');
+        const cleanCode = code.endsWith(nl) ? code.slice(0, -1) : code;
         codeBlocks.push({ id, lang: cleanLang, code: cleanCode });
         return id;
       });
@@ -1201,28 +1202,28 @@ export function getWebviewHtml(): string {
       processed = escapeHtml(processed);
 
       // Lineas horizontales
-      processed = processed.replace(/^---$/gm, '<hr style="border:none;border-top:1px solid var(--border);margin:8px 0;"/>');
+      processed = processed.replace(new RegExp('^---$', 'gm'), '<hr style="border:none;border-top:1px solid var(--border);margin:8px 0;"/>');
 
       // Encabezados
-      processed = processed.replace(/^### (.*$)/gim, '<h4 style="margin:6px 0 4px;font-size:12px;color:var(--text);font-weight:600;">$1</h4>');
-      processed = processed.replace(/^## (.*$)/gim, '<h3 style="margin:8px 0 4px;font-size:13px;color:var(--accent);font-weight:600;">$1</h3>');
-      processed = processed.replace(/^# (.*$)/gim, '<h2 style="margin:10px 0 6px;font-size:14px;color:var(--text);font-weight:700;">$1</h2>');
+      processed = processed.replace(new RegExp('^### (.*$)', 'gim'), '<h4 style="margin:6px 0 4px;font-size:12px;color:var(--text);font-weight:600;">$1</h4>');
+      processed = processed.replace(new RegExp('^## (.*$)', 'gim'), '<h3 style="margin:8px 0 4px;font-size:13px;color:var(--accent);font-weight:600;">$1</h3>');
+      processed = processed.replace(new RegExp('^# (.*$)', 'gim'), '<h2 style="margin:10px 0 6px;font-size:14px;color:var(--text);font-weight:700;">$1</h2>');
 
       // Negritas y cursivas
-      processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      processed = processed.replace(/\*(.*?)\*/g, '<em>$1</em>');
+      processed = processed.replace(new RegExp('\\*\\*(.*?)\\*\\*', 'g'), '<strong>$1</strong>');
+      processed = processed.replace(new RegExp('\\*(.*?)\\*', 'g'), '<em>$1</em>');
 
       // Codigo inline
       const inlineCodeRegex = new RegExp(b1 + '([^' + b1 + '\\n]+)' + b1, 'g');
       processed = processed.replace(inlineCodeRegex, '<code>$1</code>');
 
       // Listas desordenadas
-      processed = processed.replace(/^\s*[-*]\s+(.*)$/gim, '<li>$1</li>');
-      processed = processed.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+      processed = processed.replace(new RegExp('^\\s*[-*]\\s+(.*)$', 'gim'), '<li>$1</li>');
+      processed = processed.replace(new RegExp('(<li>.*<\\/li>)', 's'), '<ul>$1</ul>');
 
       // Parrafos y saltos de linea
-      processed = processed.replace(/\n\n+/g, '</p><p>');
-      processed = processed.replace(/\n/g, '<br/>');
+      processed = processed.replace(new RegExp(nl + nl + '+', 'g'), '</p><p>');
+      processed = processed.replace(new RegExp(nl, 'g'), '<br/>');
       processed = '<p>' + processed + '</p>';
 
       // 4. Reinsertar bloques de codigo con la UI estilo Antigravity
