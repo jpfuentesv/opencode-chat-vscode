@@ -808,6 +808,19 @@ export class OpenCodeChatViewProvider implements vscode.WebviewViewProvider {
         processLine(stdoutRemainder);
         stdoutRemainder = '';
       }
+
+      // Si assistantBuffer quedó vacío pero thoughtBuffer tiene contenido (ej. el modelo no separó CoT de la respuesta),
+      // nos aseguramos de que el usuario vea la respuesta en primer plano y no quede en blanco
+      if (!assistantBuffer.trim() && thoughtBuffer.trim()) {
+        const fallbackText = thoughtBuffer.trim();
+        assistantBuffer = fallbackText;
+        this._view?.webview.postMessage({
+          type: 'chunk',
+          assistantId: assistantMsgId,
+          text: fallbackText
+        });
+      }
+
       if (!assistantBuffer && !thoughtBuffer && code !== 0 && code !== null) {
         this._view?.webview.postMessage({
           type: 'chunk',
@@ -892,6 +905,7 @@ export class OpenCodeChatViewProvider implements vscode.WebviewViewProvider {
     this._view?.webview.postMessage({
       type: 'done',
       assistantId,
+      fullText,
       hasQueuedMessages: this._messageQueue.length > 0
     });
 

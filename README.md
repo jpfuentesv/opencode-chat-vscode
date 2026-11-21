@@ -1,65 +1,66 @@
 # OpenCode Chat for VS Code
 
-Interfaz de chat integrada en Visual Studio Code para interactuar de forma fluida con el CLI de [OpenCode](https://opencode.ai/), con visualización del proceso de razonamiento (*thinking process*), selección dinámica de modelos y ejecución contextual en el workspace activo.
+Interfaz de chat integrada en Visual Studio Code para interactuar de forma fluida con el CLI de [OpenCode](https://opencode.ai/), con visualización del proceso de razonamiento (*thinking process*), selección dinámica de modelos, adjuntos multimedia y ejecución contextual en el workspace activo.
 
 Desarrollado y mantenido por **[Juan Pablo Fuentes Vivanco](https://juanpablofuentes.cl/)**.
 
 ---
 
-## Características principales
+## Características principales (v1.1.1)
 
-- **Integración nativa en la barra lateral**: Panel de chat accesible directamente desde la barra de actividades de VS Code.
-- **Diseño fluido estilo Antigravity**:
+- **Diseño fluido al estilo Antigravity**:
   - Respuestas del asistente al descubierto en primer plano sin cajas rígidas.
-  - Bloques de código con barra de herramientas integrada (copiar código e insertar directamente en el editor activo al cursor).
-  - Acciones rápidas al pie de cada mensaje (copiar respuesta completa, reutilizar/editar prompt).
-- **Proceso de razonamiento optimizado (*Thinking Process*)**: Bloque de pensamiento en cápsula discreta desplegable que se colapsa automáticamente al finalizar la respuesta para no obstaculizar la lectura.
+  - Burbuja asimétrica elegante para las entradas del usuario (`border-radius: 18px 18px 4px 18px`).
+  - Barra de herramientas contextual al pie de cada mensaje (copiar respuesta completa, reutilizar/editar prompt en el dock de entrada, eliminar).
+  - Bloques de código enriquecidos con botones de copiar e insertar directamente en el editor activo en la posición del cursor.
+- **Motor de renderizado Markdown estructurado**:
+  - Pre-procesamiento de espaciado que separa automáticamente encabezados, listas y viñetas concatenadas inline por los modelos.
+  - Jerarquía tipográfica con escala clara (`<h2>`, `<h3>` con acento azul, `<ul>` con sangría visual de 20px).
+  - Renderizado blindado que evita el colapso de listas o textos aglomerados.
+- **Proceso de razonamiento optimizado (*Thinking Process*)**:
+  - Cápsula discreta (*pill*) de razonamiento colapsada por defecto con indicador direccional (`▸ Pensamiento completado`).
+  - No interfiere con la lectura de la respuesta principal y se despliega opcionalmente al hacer clic.
 - **Soporte de adjuntos y Drag & Drop**:
-  - Arrastra y suelta archivos o imágenes desde el Finder o el explorador de VS Code directamente al chat.
-  - Pega capturas de pantalla desde el portapapeles (`Cmd+V` / `Ctrl+V`).
+  - Arrastra y suelta archivos o imágenes desde el Finder o el explorador de VS Code directamente al panel.
+  - Pega capturas de pantalla directamente desde el portapapeles (`Cmd+V` / `Ctrl+V`).
   - Botón de adjuntos nativo (📎) para seleccionar múltiples archivos.
   - Inyección automática como parámetros `--file` al CLI de OpenCode.
-- **Selector dinámico de modelos y esfuerzo**:
-  - Modelos sincronizados dinámicamente a través del comando `opencode models`.
-  - Selector de nivel de razonamiento (*off*, *low*, *medium*, *high*).
-- **Ejecución contextual en el workspace**: Las sesiones y comandos se ejecutan tomando como directorio de trabajo (`cwd`) la carpeta abierta en VS Code.
+- **Selector dinámico de modelos y esfuerzo de razonamiento**:
+  - Modelos sincronizados dinámicamente desde `opencode models`.
+  - Selector de esfuerzo de razonamiento (*off*, *low*, *medium*, *high*).
+- **Ejecución contextual en el workspace**:
+  - Las sesiones y comandos se ejecutan tomando como directorio de trabajo (`cwd`) la carpeta abierta en VS Code.
 - **Acceso rápido y comandos**:
   - Reinicio de sesión mediante el comando `OpenCode: Reiniciar Sesión`.
-  - Exportación de conversaciones a Markdown.
-  - Acceso directo desde el icono de estado en la barra inferior.
+  - Exportación de conversaciones a Markdown y JSON.
+  - Indicador de estado en tiempo real en la barra de estado inferior.
 
 ---
 
 ## Requisitos previos
 
-Para aprovechar todas las capacidades de la extensión, es necesario contar con:
-
 1. **Visual Studio Code** versión `1.85.0` o superior.
 2. **OpenCode CLI** instalado y disponible en el `PATH` del sistema:
    ```bash
-   # Comprobar instalación previa
    opencode --version
    ```
-
-> **Nota**: Si OpenCode CLI no está instalado o no se encuentra en el PATH, la extensión mostrará un aviso informativo en la interfaz.
 
 ---
 
 ## Uso
 
 1. Haz clic en el icono de **OpenCode Chat** en la barra de actividad lateral o en el indicador de la barra de estado.
-2. Selecciona el modelo y el nivel de esfuerzo de razonamiento deseado en el selector inferior.
-3. Escribe tu consulta o instrucción sobre el código y presiona **Enter** o el botón de envío.
-4. Si necesitas reiniciar la conversación, utiliza el botón de reset en la cabecera o ejecuta el comando `OpenCode: Reiniciar Sesión` desde la paleta de comandos (`Ctrl+Shift+P` / `Cmd+Shift+P`).
+2. Selecciona el modelo y el nivel de esfuerzo de razonamiento deseado en el dock inferior.
+3. Escribe tu consulta, arrastra archivos de referencia si lo requieres y presiona **Enter**.
+4. Si necesitas reiniciar la conversación, utiliza el botón de reset en la cabecera o ejecuta el comando `OpenCode: Reiniciar Sesión` (`Ctrl+Shift+P` / `Cmd+Shift+P`).
 
 ---
 
 ## Arquitectura y Modularidad
 
-El proyecto implementa una clara separación de responsabilidades:
-- **`src/extension.ts`**: Punto de entrada de la extensión, registro de proveedores en el ciclo de vida de VS Code y gestión del item en la barra de estado.
-- **`src/OpenCodeChatViewProvider.ts`**: Controlador del WebviewViewProvider, orquestación de subprocesos con el CLI de OpenCode, gestión de cola de mensajes y eventos de streaming.
-- **`src/webviewHtml.ts`**: Módulo encapsulado responsable de renderizar el cliente Webview (HTML, tokens semánticos CSS y frontend interactivo).
+- **`src/extension.ts`**: Punto de entrada de la extensión, registro de comandos y ciclo de vida en VS Code.
+- **`src/OpenCodeChatViewProvider.ts`**: Controlador Webview, ejecución de subprocesos con OpenCode CLI, enrutamiento de streaming (`chunk`, `thoughtChunk`, `done`) y cola de mensajes.
+- **`src/webviewHtml.ts`**: Frontend Webview (HTML, tokens semánticos CSS y motor de renderizado Markdown interactivo).
 
 ---
 

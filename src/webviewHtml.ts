@@ -172,6 +172,15 @@ export function getWebviewHtml(): string {
       scroll-behavior: smooth;
     }
 
+    .welcome-banner {
+      color: var(--text-muted);
+      font-size: 13.5px;
+      line-height: 1.6;
+      padding: 12px 4px 6px;
+      user-select: none;
+      letter-spacing: -0.01em;
+    }
+
     .msg-card {
       position: relative;
       line-height: 1.6;
@@ -211,6 +220,15 @@ export function getWebviewHtml(): string {
       padding: 0 !important;
       border-radius: 0 !important;
       box-shadow: none !important;
+    }
+
+    .msg-card.assistant .msg-content {
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      margin-top: 2px;
+      margin-bottom: 6px;
     }
 
     /* Barra de chips de adjuntos dentro del mensaje */
@@ -401,6 +419,25 @@ export function getWebviewHtml(): string {
     }
 
     /* Tablas y elementos Markdown en respuestas */
+    .msg-content h1, .msg-content h2, .msg-content h3, .msg-content h4 {
+      line-height: 1.4;
+      font-weight: 600;
+    }
+    .msg-content h2 {
+      font-size: 15px;
+      margin: 16px 0 8px;
+      color: var(--text);
+    }
+    .msg-content h3 {
+      font-size: 13.5px;
+      margin: 14px 0 6px;
+      color: var(--accent);
+    }
+    .msg-content h4 {
+      font-size: 12.5px;
+      margin: 10px 0 4px;
+      color: var(--text);
+    }
     .msg-content table {
       border-collapse: collapse;
       width: 100%;
@@ -417,14 +454,21 @@ export function getWebviewHtml(): string {
       font-weight: 600;
     }
     .msg-content ul, .msg-content ol {
-      margin: 6px 0 6px 18px;
+      margin: 6px 0 8px 20px;
       padding: 0;
     }
     .msg-content li {
-      margin-bottom: 3px;
+      margin-bottom: 4px;
+      line-height: 1.55;
     }
     .msg-content p {
-      margin: 4px 0;
+      margin: 6px 0;
+      line-height: 1.6;
+    }
+    .msg-content hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 14px 0;
     }
     .msg-content code:not(.code-block-body) {
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
@@ -991,7 +1035,7 @@ export function getWebviewHtml(): string {
 
 
   <div id="messages">
-    <div class="msg-card">¿Qué desarrollaremos hoy? Estoy listo para ayudarte con código, depuración y arquitectura.</div>
+    <div class="welcome-banner">¿Qué desarrollaremos hoy? Estoy listo para ayudarte con código, depuración y arquitectura.</div>
   </div>
 
   <div class="bg-tasks" id="bg-tasks">
@@ -1428,77 +1472,110 @@ export function getWebviewHtml(): string {
       }
     }
 
+    function formatMarkdownSpacing(input) {
+      if (!input) return '';
+      const nl = String.fromCharCode(10);
+      const cr = String.fromCharCode(13);
+      const bt = String.fromCharCode(96);
+      let s = input.replace(new RegExp(cr + '?' + nl, 'g'), nl);
+      
+      const headerRegex = new RegExp('([^' + nl + '])\\\\s+(#{1,6}\\\\s+)', 'g');
+      s = s.replace(headerRegex, '$1' + nl + nl + '$2');
+
+      const bulletRegex = new RegExp('([^' + nl + '])\\\\s+-\\\\s+', 'g');
+      s = s.replace(bulletRegex, '$1' + nl + '- ');
+
+      const numListRegex = new RegExp('([.!?:]|[a-z\\\\u00C0-\\\\u017F\\\\)])\\\\s+(\\\\d+\\\\.\\\\s+[A-Z\\\\u00C0-\\\\u017F0-9*' + bt + '])', 'g');
+      s = s.replace(numListRegex, '$1' + nl + '$2');
+
+      const hrRegex = new RegExp('([^' + nl + '])\\\\s+---\\\\s+', 'g');
+      s = s.replace(hrRegex, '$1' + nl + nl + '---' + nl + nl);
+
+      return s;
+    }
+
     function renderMarkdownToHtml(markdown) {
       if (!markdown) return '';
-      const codeBlocks = [];
+      try {
+        const codeBlocks = [];
 
-      // 1. Extraer bloques de codigo triples comillas invertidas
-      const b3 = String.fromCharCode(96, 96, 96);
-      const b1 = String.fromCharCode(96);
-      const nl = String.fromCharCode(10);
-      const codeRegex = new RegExp(b3 + '([a-zA-Z0-9_\\-\\.\\+]*)' + nl + '([\\s\\S]*?)' + b3, 'g');
-      let processed = markdown.replace(codeRegex, (match, lang, code) => {
-        const id = '___CODE_BLOCK_' + codeBlocks.length + '___';
-        const cleanLang = (lang || 'code').trim();
-        const cleanCode = code.endsWith(nl) ? code.slice(0, -1) : code;
-        codeBlocks.push({ id, lang: cleanLang, code: cleanCode });
-        return id;
-      });
+        // 0. Preformatear espaciado estructurado para evitar texto aglomerado
+        const structuredText = formatMarkdownSpacing(markdown);
 
-      // 2. Escapar HTML en el texto regular
-      const escapeHtml = (str) => str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-      processed = escapeHtml(processed);
+        // 1. Extraer bloques de codigo triples comillas invertidas
+        const b3 = String.fromCharCode(96, 96, 96);
+        const b1 = String.fromCharCode(96);
+        const nl = String.fromCharCode(10);
+        const codeRegex = new RegExp(b3 + '([a-zA-Z0-9_\\\\-\\\\.\\\\+]*)' + nl + '([\\\\s\\\\S]*?)' + b3, 'g');
+        let processed = structuredText.replace(codeRegex, (match, lang, code) => {
+          const id = '___CODE_BLOCK_' + codeBlocks.length + '___';
+          const cleanLang = (lang || 'code').trim();
+          const cleanCode = code.endsWith(nl) ? code.slice(0, -1) : code;
+          codeBlocks.push({ id, lang: cleanLang, code: cleanCode });
+          return id;
+        });
 
-      // Lineas horizontales
-      processed = processed.replace(new RegExp('^---$', 'gm'), '<hr style="border:none;border-top:1px solid var(--border);margin:8px 0;"/>');
+        // 2. Escapar HTML en el texto regular
+        const escapeHtml = (str) => str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        processed = escapeHtml(processed);
 
-      // Encabezados
-      processed = processed.replace(new RegExp('^### (.*$)', 'gim'), '<h4 style="margin:6px 0 4px;font-size:12px;color:var(--text);font-weight:600;">$1</h4>');
-      processed = processed.replace(new RegExp('^## (.*$)', 'gim'), '<h3 style="margin:8px 0 4px;font-size:13px;color:var(--accent);font-weight:600;">$1</h3>');
-      processed = processed.replace(new RegExp('^# (.*$)', 'gim'), '<h2 style="margin:10px 0 6px;font-size:14px;color:var(--text);font-weight:700;">$1</h2>');
+        // Lineas horizontales
+        processed = processed.replace(new RegExp('^---$', 'gm'), '<hr/>');
 
-      // Negritas y cursivas
-      processed = processed.replace(new RegExp('\\*\\*(.*?)\\*\\*', 'g'), '<strong>$1</strong>');
-      processed = processed.replace(new RegExp('\\*(.*?)\\*', 'g'), '<em>$1</em>');
+        // Encabezados
+        processed = processed.replace(new RegExp('^### (.*$)', 'gim'), '<h4>$1</h4>');
+        processed = processed.replace(new RegExp('^## (.*$)', 'gim'), '<h3>$1</h3>');
+        processed = processed.replace(new RegExp('^# (.*$)', 'gim'), '<h2>$1</h2>');
 
-      // Codigo inline
-      const inlineCodeRegex = new RegExp(b1 + '([^' + b1 + '\\n]+)' + b1, 'g');
-      processed = processed.replace(inlineCodeRegex, '<code>$1</code>');
+        // Negritas y cursivas
+        processed = processed.replace(new RegExp('\\\\*\\\\*(.*?)\\\\*\\\\*', 'g'), '<strong>$1</strong>');
+        processed = processed.replace(new RegExp('\\\\*(.*?)\\\\*', 'g'), '<em>$1</em>');
 
-      // Listas desordenadas
-      processed = processed.replace(new RegExp('^\\s*[-*]\\s+(.*)$', 'gim'), '<li>$1</li>');
-      processed = processed.replace(new RegExp('(<li>.*<\\/li>)', 's'), '<ul>$1</ul>');
+        // Codigo inline
+        const inlineCodeRegex = new RegExp(b1 + '([^' + b1 + '\\\\n]+)' + b1, 'g');
+        processed = processed.replace(inlineCodeRegex, '<code>$1</code>');
 
-      // Parrafos y saltos de linea
-      processed = processed.replace(new RegExp(nl + nl + '+', 'g'), '</p><p>');
-      processed = processed.replace(new RegExp(nl, 'g'), '<br/>');
-      processed = '<p>' + processed + '</p>';
+        // Listas desordenadas y numeradas con captura y limpieza de saltos de linea
+        processed = processed.replace(new RegExp('^\\\\s*[-*]\\\\s+(.*)$', 'gim'), '<li>$1</li>');
+        processed = processed.replace(new RegExp('^\\\\s*\\\\d+\\\\.\\\\s+(.*)$', 'gim'), '<li>$1</li>');
+        processed = processed.replace(new RegExp('((?:<li>.*<\\\\/li>(?:\\\\r?\\\\n)?)+)', 'g'), (match) => {
+          const items = match.split(new RegExp('\\\\r?\\\\n')).filter(l => l.trim().length > 0).join('');
+          return '<ul>' + items + '</ul>';
+        });
 
-      // 4. Reinsertar bloques de codigo con la UI estilo Antigravity
-      for (const block of codeBlocks) {
-        const escapedCode = escapeHtml(block.code);
-        const encodedCode = encodeURIComponent(block.code);
-        const blockHtml = 
-          '<div class="code-block-wrapper">' +
-            '<div class="code-block-header">' +
-              '<span class="code-lang-label">' + block.lang + '</span>' +
-              '<div class="code-actions">' +
-                '<button type="button" class="code-action-btn code-copy-btn" data-code="' + encodedCode + '">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
-                  '<span>Copiar</span>' +
-                '</button>' +
-                '<button type="button" class="code-action-btn code-insert-btn" data-code="' + encodedCode + '">' +
-                  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>' +
-                  '<span>Insertar</span>' +
-                '</button>' +
+        // Parrafos y saltos de linea
+        processed = processed.replace(new RegExp(nl + nl + '+', 'g'), '</p><p>');
+        processed = processed.replace(new RegExp(nl, 'g'), '<br/>');
+        processed = '<p>' + processed + '</p>';
+
+        // 4. Reinsertar bloques de codigo con la UI estilo Antigravity
+        for (const block of codeBlocks) {
+          const escapedCode = escapeHtml(block.code);
+          const encodedCode = encodeURIComponent(block.code);
+          const blockHtml = 
+            '<div class="code-block-wrapper">' +
+              '<div class="code-block-header">' +
+                '<span class="code-lang-label">' + block.lang + '</span>' +
+                '<div class="code-actions">' +
+                  '<button type="button" class="code-action-btn code-copy-btn" data-code="' + encodedCode + '">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+                    '<span>Copiar</span>' +
+                  '</button>' +
+                  '<button type="button" class="code-action-btn code-insert-btn" data-code="' + encodedCode + '">' +
+                    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>' +
+                    '<span>Insertar</span>' +
+                  '</button>' +
+                '</div>' +
               '</div>' +
-            '</div>' +
-            '<pre class="code-block-body"><code>' + escapedCode + '</code></pre>' +
-          '</div>';
-        processed = processed.replace(block.id, blockHtml);
-      }
+              '<pre class="code-block-body"><code>' + escapedCode + '</code></pre>' +
+            '</div>';
+          processed = processed.replace(block.id, blockHtml);
+        }
 
-      return processed;
+        return processed;
+      } catch (e) {
+        return markdown;
+      }
     }
 
     function createMessageElement(id, text, role, files = []) {
@@ -1538,6 +1615,7 @@ export function getWebviewHtml(): string {
 
         thoughtBody = document.createElement('div');
         thoughtBody.className = 'thought-body';
+        thoughtBody.style.display = 'none';
         thoughtBody.textContent = '';
 
         thoughtHeader.addEventListener('click', () => {
@@ -1719,7 +1797,7 @@ export function getWebviewHtml(): string {
         case 'sessionResetConfirmed': {
           setProcessing(false);
           assistantBubbles.clear();
-          messagesEl.innerHTML = '<div class="msg-card">Sesión reiniciada. ¿Qué desarrollaremos hoy?</div>';
+          messagesEl.innerHTML = '<div class="welcome-banner">Sesión reiniciada. ¿Qué desarrollaremos hoy?</div>';
           queueContainer.innerHTML = '';
           clearBackgroundTasks();
           if (progressBar) {
@@ -1753,6 +1831,9 @@ export function getWebviewHtml(): string {
           setProcessing(true);
           createMessageElement(data.userMsg.id, data.userMsg.text, 'user', data.userMsg.files || []);
           const astRefs = createMessageElement(data.assistantId, '', 'assistant');
+          if (astRefs.thoughtHeader) {
+            astRefs.thoughtHeader.querySelector('.header-icon').textContent = '▸';
+          }
           assistantBubbles.set(data.assistantId, astRefs);
           if (progressBar) {
             progressBar.style.display = 'block';
@@ -1769,7 +1850,6 @@ export function getWebviewHtml(): string {
           if (refs && refs.thoughtContainer && refs.thoughtBody) {
             refs.hasThought = true;
             refs.thoughtContainer.style.display = 'block';
-            refs.thoughtBody.style.display = 'block';
             refs.thoughtBody.textContent += data.text;
             refs.thoughtBody.scrollTop = refs.thoughtBody.scrollHeight;
             messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -1790,20 +1870,33 @@ export function getWebviewHtml(): string {
           clearBackgroundTasks();
           setProcessing(Boolean(data.hasQueuedMessages));
           const refs = assistantBubbles.get(data.assistantId);
-          if (refs && refs.thoughtContainer && refs.thoughtHeader) {
-            if (!refs.hasThought) {
-              // Si el modelo respondio directo sin bloques de razonamiento intermedios, ocultar la caja vacia
-              refs.thoughtContainer.style.display = 'none';
-            } else {
-              const titleSpan = refs.thoughtHeader.querySelector('.header-title');
-              if (titleSpan) {
-                titleSpan.textContent = 'Pensamiento completado';
+          if (refs) {
+            // Asegurar que si el mensaje final llegó en 'done', se pinte en primer plano
+            if (data.fullText && (!refs.card.dataset.rawText || refs.card.dataset.rawText.trim().length === 0)) {
+              refs.card.dataset.rawText = data.fullText;
+              if (refs.content) {
+                refs.content.innerHTML = renderMarkdownToHtml(data.fullText);
               }
-              const pulse = refs.thoughtHeader.querySelector('.pulse-dot');
-              if (pulse) pulse.remove();
-              if (refs.thoughtBody) {
-                refs.thoughtBody.style.display = 'none';
-                refs.thoughtHeader.querySelector('.header-icon').textContent = '▸';
+            } else if (refs.content && refs.card.dataset.rawText) {
+              refs.content.innerHTML = renderMarkdownToHtml(refs.card.dataset.rawText);
+            }
+            messagesEl.scrollTop = messagesEl.scrollHeight;
+
+            if (refs.thoughtContainer && refs.thoughtHeader) {
+              if (!refs.hasThought) {
+                // Si el modelo respondio directo sin bloques de razonamiento intermedios, ocultar la caja vacia
+                refs.thoughtContainer.style.display = 'none';
+              } else {
+                const titleSpan = refs.thoughtHeader.querySelector('.header-title');
+                if (titleSpan) {
+                  titleSpan.textContent = 'Pensamiento completado';
+                }
+                const pulse = refs.thoughtHeader.querySelector('.pulse-dot');
+                if (pulse) pulse.remove();
+                if (refs.thoughtBody) {
+                  refs.thoughtBody.style.display = 'none';
+                  refs.thoughtHeader.querySelector('.header-icon').textContent = '▸';
+                }
               }
             }
           }
